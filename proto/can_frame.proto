@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package automotive;
+
+message CANFrame {
+    string vehicle_id = 1;
+    double vehicle_timestamp = 2;
+    uint32 arbitration_id = 3;
+    uint32 dlc = 4;
+    bytes data = 5;
+}
