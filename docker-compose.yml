@@ -1,0 +1,60 @@
+services:
+
+  # ---------------------------------------------------------------------------
+  # Redpanda — Kafka-compatible message broker
+  # ---------------------------------------------------------------------------
+  redpanda:
+    image: redpandadata/redpanda:latest
+    container_name: redpanda
+    command:
+      - redpanda
+      - start
+      - --smp 1
+      - --memory 512M
+      - --overprovisioned
+      - --kafka-addr PLAINTEXT://0.0.0.0:9092
+      - --advertise-kafka-addr PLAINTEXT://localhost:9092
+    ports:
+      - "9092:9092"
+      - "9644:9644"   # admin API
+    healthcheck:
+      test: ["CMD", "rpk", "cluster", "info"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # Redpanda Console — optional UI at http://localhost:8080
+  redpanda-console:
+    image: redpandadata/console:latest
+    container_name: redpanda-console
+    ports:
+      - "8080:8080"
+    environment:
+      - KAFKA_BROKERS=redpanda:9092
+    depends_on:
+      redpanda:
+        condition: service_healthy
+
+  # ---------------------------------------------------------------------------
+  # PostgreSQL — telemetry + anomaly event storage
+  # ---------------------------------------------------------------------------
+  postgres:
+    image: postgres:16-alpine
+    container_name: postgres
+    environment:
+      POSTGRES_DB: telemetry
+      POSTGRES_USER: bigloop
+      POSTGRES_PASSWORD: bigloop
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./dashboard/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bigloop -d telemetry"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  postgres_data:
