@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package automotive;
+
+enum CommandType {
+    PREPARE = 0;
+    INSTALL = 1;
+    ACTIVATE = 2;
+    ROLLBACK = 3;
+}
+
+enum EcuTarget {
+    ENGINE = 0;
+    TRANSMISSION = 1;
+    BMS = 2;
+    ADAS = 3;
+}
+
+enum StatusCode {
+    IDLE = 0;
+    DOWNLOADING = 1;
+    VERIFYING = 2;
+    DONE = 3;
+    ERROR = 4;
+    ROLLED_BACK = 5;
+}
+
+message OTACommand {
+    CommandType cmd_type = 1;
+    string session_id = 2;
+    EcuTarget target_ecu = 3;
+    uint32 fw_version_major = 4;
+    uint32 fw_version_minor = 5;
+    uint32 fw_version_patch = 6;
+    string package_id = 7;
+    bytes checksum = 8;
+}
+
+message OTAStatus {
+    string session_id = 1;
+    StatusCode status_code = 2;
+    uint32 progress_pct = 3;
+    uint32 error_code = 4;
+    uint32 current_fw_major = 5;
+    uint32 current_fw_minor = 6;
+    uint32 current_fw_patch = 7;
+    string vehicle_id = 8; 
+}
