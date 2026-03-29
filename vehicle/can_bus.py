@@ -59,7 +59,7 @@ MESSAGE_CATALOGUE[0x0C2] = [
     SignalDef("fuel_level_pct", 0, 10, 0.1, 0, 0, 100, "%"),
     SignalDef("fuel_consumption", 10, 10, 0.1, 0, 0, 50, "l/100km"),
     SignalDef("injector_pw_us", 20, 15, 1.0, 0, 0, 25000, "µs"),
-    SignalDef("lambda", 35, 11, 0.001, 0, 0, 1.99, "λ"),
+    SignalDef("lambda", 35, 11, 0.001, 0, 0.000, 1.990, "λ"),
 ]
 
 '''
