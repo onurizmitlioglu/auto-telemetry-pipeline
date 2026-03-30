@@ -12,11 +12,13 @@ services:
       - --smp 1
       - --memory 512M
       - --overprovisioned
-      - --kafka-addr PLAINTEXT://0.0.0.0:9092
-      - --advertise-kafka-addr PLAINTEXT://localhost:9092
+      - --kafka-addr PLAINTEXT://0.0.0.0:9092,EXTERNAL://0.0.0.0:19092
+      - --advertise-kafka-addr PLAINTEXT://redpanda:9092,EXTERNAL://localhost:19092
+      - --schema-registry-addr HTTP://0.0.0.0:8081
     ports:
-      - "9092:9092"
-      - "9644:9644"   # admin API
+      - "19092:19092"
+      - "9644:9644"
+      - "8081:8081"
     healthcheck:
       test: ["CMD", "rpk", "cluster", "info"]
       interval: 10s
@@ -31,6 +33,8 @@ services:
       - "8080:8080"
     environment:
       - KAFKA_BROKERS=redpanda:9092
+      - SCHEMA_REGISTRY_ENABLED=true
+      - SCHEMA_REGISTRY_URLS=http://redpanda:8081
     depends_on:
       redpanda:
         condition: service_healthy
@@ -46,7 +50,7 @@ services:
       POSTGRES_USER: bigloop
       POSTGRES_PASSWORD: bigloop
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./dashboard/schema.sql:/docker-entrypoint-initdb.d/schema.sql
