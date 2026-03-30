@@ -4,3 +4,5 @@ pytest
 kafka-python
 pyyaml
 psycopg2-binary
+paho-mqtt
+cryptography
