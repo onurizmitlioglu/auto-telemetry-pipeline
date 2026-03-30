@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS telemetry (
     engine_rpm          NUMERIC(7,1),
     throttle_pct        NUMERIC(5,1),
     engine_load_pct     NUMERIC(5,1),
+    ignition_timing     NUMERIC(5,1),
     coolant_temp_c      NUMERIC(5,1),
     oil_temp_c          NUMERIC(5,1),
     oil_pressure_bar    NUMERIC(5,2),
@@ -21,6 +22,7 @@ CREATE TABLE IF NOT EXISTS telemetry (
     map_kpa             NUMERIC(6,2),
     fuel_level_pct      NUMERIC(5,1),
     fuel_consumption    NUMERIC(7,2),
+    injector_pw_us      INTEGER,
     lambda              NUMERIC(6,4),
 
     -- Transmission
@@ -47,7 +49,7 @@ CREATE TABLE IF NOT EXISTS telemetry (
     longitude           NUMERIC(10,6),
 
     -- Fault flags
-    mil_status          BOOLEAN,
+    mil_status          SMALLINT,
     dtc_count           SMALLINT,
     anomaly_count       SMALLINT DEFAULT 0
 );
