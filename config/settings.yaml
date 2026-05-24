@@ -1,0 +1,15 @@
+kafka:
+  bootstrap: "localhost:19092"
+  connect_retries: 5
+  connect_delay_s: 3.0
+
+ecu:
+  engine:
+    tick_interval_ms: 10
+
+postgres:
+  host: "127.0.0.1"
+  port: 5433
+  database: "telemetry"
+  user: "bigloop"
+  password: "bigloop"

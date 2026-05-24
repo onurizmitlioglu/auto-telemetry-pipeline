@@ -1,0 +1,30 @@
+rules:
+  - rule: P0217
+    conditions:
+      - signal: coolant_temp_c
+        operator: ">"
+        threshold: 108.0
+    logic: AND
+    severity: critical
+    description: "Engine coolant over temperature"
+
+  - rule: P0171
+    conditions:
+      - signal: lambda
+        operator: ">"
+        threshold: 1.15
+    logic: AND
+    severity: warning
+    description: "Fuel system lean Bank 1"
+
+  - rule: P0300
+    conditions:
+      - signal: engine_rpm
+        operator: "<"
+        threshold: 900.0
+      - signal: engine_load_pct
+        operator: ">"
+        threshold: 60.0
+    logic: AND
+    severity: warning
+    description: "Random/multiple misfire detected"
