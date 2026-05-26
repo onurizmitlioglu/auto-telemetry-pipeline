@@ -66,6 +66,15 @@ services:
       - "1883:1883"
     volumes:
       - ./config/mosquitto.conf:/mosquitto/config/mosquitto.conf
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - postgres
 
 volumes:
   postgres_data:
