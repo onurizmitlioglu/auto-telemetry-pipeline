@@ -6,3 +6,4 @@ pyyaml
 psycopg2-binary
 paho-mqtt
 cryptography
+kafka-python

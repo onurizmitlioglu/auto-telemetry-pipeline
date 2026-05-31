@@ -73,8 +73,25 @@ services:
       - "3000:3000"
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_DASHBOARDS_MIN_REFRESH_INTERVAL=1s
+    volumes:
+      - grafana_data:/var/lib/grafana
     depends_on:
       - postgres
+  mqtt-kafka-bridge:
+    build:
+      context: .
+      dockerfile: ./pipeline/Dockerfile.bridge
+    container_name: mqtt-kafka-bridge
+    environment:
+      - MQTT_BROKER=mosquitto
+      - KAFKA_SERVER=redpanda:9092
+    depends_on:
+      mosquitto:
+        condition: service_started
+      redpanda:
+        condition: service_healthy
 
 volumes:
-  postgres_data:
+  postgres_data: 
+  grafana_data:
