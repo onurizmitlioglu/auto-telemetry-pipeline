@@ -47,24 +47,26 @@ class Pipeline:
     def run(self):
         print("[Pipeline] Starting...")
         while True:
-            for message in self._consumer:
-                try:
-                    frame = CANFrame()
-                    frame.ParseFromString(message.value)
-                    signals = decode(frame.arbitration_id, frame.data)
-                    if signals:
-                        if frame.vehicle_id not in self._vehicle_state:
-                            self._vehicle_state[frame.vehicle_id] = {}
-                        self._vehicle_state[frame.vehicle_id].update(signals)
-                        
-                except Exception as e:
-                    print(f"[Pipeline] Error: {e}")
+            message_pack = self._consumer.poll(timeout_ms=100)
 
-                now = time.time()
-                if now - self._last_snapshot >= self._snapshot_interval:
-                    for vehicle_id, state in self._vehicle_state.items():
-                        self._write_snapshot(vehicle_id, state)
-                    self._last_snapshot = now
+            for tp, messages in message_pack.items():
+                for message in messages:
+                    try:
+                        frame = CANFrame()
+                        frame.ParseFromString(message.value)
+                        signals = decode(frame.arbitration_id, frame.data)
+                        if signals:
+                            if frame.vehicle_id not in self._vehicle_state:
+                                self._vehicle_state[frame.vehicle_id] = {}
+                            self._vehicle_state[frame.vehicle_id].update(signals)
+                    except Exception as e:
+                        print(f"[Pipeline] Error parsing message: {e}")
+
+            now = time.time()
+            if now - self._last_snapshot >= self._snapshot_interval:
+                for vehicle_id, state in self._vehicle_state.items():
+                    self._write_snapshot(vehicle_id, state)
+                self._last_snapshot = now
 
     def _check_anomalies(self, vehicle_id: str, state: dict):
         if vehicle_id not in self._active_anomalies:
@@ -154,4 +156,9 @@ class Pipeline:
             self._check_anomalies(vehicle_id, state)
         except Exception as e:
             self._db.rollback()
-            print(f"[Pipeline] Anomaly write error: {e}")
+            print(f"[Pipeline] Snapshot write error: {e}")
+
+if __name__ == "__main__":
+    pipeline = Pipeline()
+    pipeline.connect()
+    pipeline.run()
